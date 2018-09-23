@@ -40,9 +40,5 @@ object WeatherProvider {
                 }
             }
         })
-
-        while (weatherResponseBody == null) {
-            Log.e("getWeather", "Data hasn't been delivered yet")
-        }
     }
 }

@@ -64,6 +64,9 @@ class Weather {
     val windText: String?
         get() = "${wind.speed} m/s"
 
+    val windDouble: Double?
+        get() = wind.speed
+
     inner class WeatherTemp {
         internal var temp: Double? = null
         internal var temp_min: Double? = null

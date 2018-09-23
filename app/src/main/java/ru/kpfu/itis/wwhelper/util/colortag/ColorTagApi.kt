@@ -1,5 +1,6 @@
 package ru.kpfu.itis.wwhelper.util.colortag
 
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -30,12 +31,13 @@ class ColorTagApi {
     }
 
     interface ApiInterface {
-        @GET("tag-file.json")
+        @Multipart
+        @POST("tag-file.json")
         @Headers("X-Mashape-Key: tkWiGgNmwXmshxHOwiZFCRsnXlaYp1otE6EjsnLxohSwKekCHQ")
         fun getColors(
-                @Query("palette") palette: String,
-                @Query("sort") sort: String,
-                @Query("url") url: String
+                @Part("image") filePart: MultipartBody.Part,
+                @Part("palette") palette: RequestBody,
+                @Part("sort") sort: RequestBody
         ) : Call<ColorTags>
     }
 }

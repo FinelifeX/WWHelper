@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.google.android.gms.common.api.ResolvableApiException
@@ -20,10 +21,7 @@ import ru.kpfu.itis.wwhelper.R
 import ru.kpfu.itis.wwhelper.model.provider.UserProvider
 import ru.kpfu.itis.wwhelper.model.provider.WeatherProvider
 import ru.kpfu.itis.wwhelper.ui.login.LoginActivity
-import ru.kpfu.itis.wwhelper.util.REQUEST_CHECK_SETTINGS
-import ru.kpfu.itis.wwhelper.util.REQUEST_PERMISSION_COARSE_LOCATION
-import ru.kpfu.itis.wwhelper.util.currentLatitude
-import ru.kpfu.itis.wwhelper.util.currentLongitude
+import ru.kpfu.itis.wwhelper.util.*
 
 class SplashActivity : AppCompatActivity() {
 
@@ -88,7 +86,6 @@ class SplashActivity : AppCompatActivity() {
                         if (location != null) {
                             currentLatitude = location.latitude
                             currentLongitude = location.longitude
-                            WeatherProvider.getWeather()
                         }
                     }
         }

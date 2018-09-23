@@ -11,6 +11,9 @@ import com.bumptech.glide.Glide
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_new_thing.*
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -103,15 +106,27 @@ class NewThingActivity : AppCompatActivity() {
                                 tv_thing_color.text.toString(),
                                 currentType,
                                 downloadUri))
-                getColors(Uri.decode(downloadUri))
+
+                //Bitmap to PNG
+                val imgCompressed = File(baseContext.filesDir, "lastTakenImage")
+                val fOut = FileOutputStream(imgCompressed)
+                lastTakenPhotoBitmap?.compress(Bitmap.CompressFormat.PNG, 100, fOut)
+                fOut.close()
+                fOut.flush()
+
+                getColors(imgCompressed, "simple", "weight")
             }
         }
     }
 
-    private fun getColors(pictureUrl: String) {
+    private fun getColors(file: File, palette: String, sort: String) {
         Log.e("getColors()", "invoked!")
 
-        val callColors = api.getColors("simple", "weight", pictureUrl)
+        val filePart = MultipartBody.Part.createFormData("image", file.name, RequestBody.create(MediaType.parse("image/*"), file))
+        val paletteTemp = RequestBody.create(MediaType.parse("text/plain"), palette)
+        val sortTemp = RequestBody.create(MediaType.parse("text/plain"), sort)
+
+        val callColors = api.getColors(filePart, paletteTemp, sortTemp)
         callColors.enqueue(object : Callback<ColorTags> {
             override fun onFailure(call: Call<ColorTags>, t: Throwable) {
                 Log.e("callColors", "onFailure")
@@ -125,16 +140,6 @@ class NewThingActivity : AppCompatActivity() {
             }
 
         })
-
-        //Bitmap to PNG
-        val imgCompressed = File(baseContext.filesDir, "lastTakenImage")
-        val fOut = FileOutputStream(imgCompressed)
-        lastTakenPhotoBitmap?.compress(Bitmap.CompressFormat.PNG, 100, fOut)
-        fOut.close()
-        fOut.flush()
-
-
-
     }
 
     private fun convertImageToByteArray(bitmap: Bitmap) : ByteArray {

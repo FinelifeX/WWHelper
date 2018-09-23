@@ -15,7 +15,7 @@ import ru.kpfu.itis.wwhelper.model.weather.Weather
 class WeatherApi {
 
     companion object {
-        const val KEY : String = "188b5c5acc1f7f558254a9abbcc3c9e0"
+        const val KEY : String = "eb798679669344b06c8f64172d399393"
         const val BASE_URL : String = "http://api.openweathermap.org/data/2.5/"
         private var retrofit : Retrofit? = null
 

@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        navigation.selectedItemId = R.id.navigation_clothing
+        navigation.selectedItemId = R.id.navigation_weather
         previousSelectedItemId = selectedItemId
 
         refresher.setOnRefreshListener(this)
