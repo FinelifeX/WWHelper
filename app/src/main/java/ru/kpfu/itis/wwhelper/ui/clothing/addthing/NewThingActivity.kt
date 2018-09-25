@@ -33,7 +33,11 @@ class NewThingActivity : AppCompatActivity() {
 
     private lateinit var api: ColorTagApi.ApiInterface
 
-    private lateinit var currentUUID: String
+    private var currentUUID = UUID.randomUUID().toString()
+
+    private var currentType: String = "Shirt"
+
+    val currentUser = UserProvider.getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,32 +57,27 @@ class NewThingActivity : AppCompatActivity() {
             AlertDialog.Builder(this).setTitle("Choose type")
                     .setItems(items) { dialog, which ->
                         dialog.dismiss()
-                        if (which == 0) {
-                            AlertDialog.Builder(this).setTitle("Choose type")
+                        when (which) {
+                            0 -> AlertDialog.Builder(this).setTitle("Choose type")
                                     .setItems(Clothes.chestClothes) { dialog, which ->
                                         btn_choose_type.text = Clothes.chestClothes[which]
+                                        currentType = Clothes.chestClothes[which]
                                     }.create().show()
-                        }
-                        else if (which == 1) {
-                            AlertDialog.Builder(this).setTitle("Choose type")
+                            1 -> AlertDialog.Builder(this).setTitle("Choose type")
                                     .setItems(Clothes.legsClothes) {dialog, which ->
-                                        btn_choose_type.text = Clothes.chestClothes[which]
+                                        btn_choose_type.text = Clothes.legsClothes[which]
+                                        currentType = Clothes.legsClothes[which]
                                     }.create().show()
-                        }
-                        else {
-                            AlertDialog.Builder(this).setTitle("Choose type")
+                            else -> AlertDialog.Builder(this).setTitle("Choose type")
                                     .setItems(Clothes.outerClothes) {dialog, which ->
                                         btn_choose_type.text = Clothes.outerClothes[which]
+                                        currentType = Clothes.outerClothes[which]
                                     }.create().show()
                         }
                     }.create().show()
         }
 
         btn_save.setOnClickListener {
-            val dbRef = FirebaseDatabase.getInstance().reference
-            val currentUser = UserProvider.getCurrentUser()
-            currentUUID = UUID.randomUUID().toString()
-            var downloadUri: String
             val storageRef =
                     FirebaseStorage.getInstance().reference
                             .child("images")
@@ -86,26 +85,14 @@ class NewThingActivity : AppCompatActivity() {
                             .child("$currentUUID.png")
 
             val imgByteArray = convertImageToByteArray(lastTakenPhotoBitmap!!)
+
             val uploadTask = storageRef.putBytes(imgByteArray)
 
             uploadTask.addOnSuccessListener { p0 ->
                 Log.e("Upload picture", "Success!")
                 val urlTask = p0!!.storage.downloadUrl
                 while (!urlTask.isSuccessful) { }
-                downloadUri = urlTask.result.toString()
-                val currentType: String = if (btn_choose_type.text.toString() == resources.getString(R.string.choose_type)) {
-                    "Shirt"
-                } else {
-                    btn_choose_type.text.toString()
-                }
-                dbRef.child("things")
-                        .child(currentUser?.uid.toString())
-                        .child(currentUUID)
-                        .setValue(Thing(
-                                currentUUID,
-                                tv_thing_color.text.toString(),
-                                currentType,
-                                downloadUri))
+                val downloadUri = urlTask.result.toString()
 
                 //Bitmap to PNG
                 val imgCompressed = File(baseContext.filesDir, "lastTakenImage")
@@ -114,12 +101,12 @@ class NewThingActivity : AppCompatActivity() {
                 fOut.close()
                 fOut.flush()
 
-                getColors(imgCompressed, "simple", "weight")
+                getColors(imgCompressed, "simple", "weight", downloadUri)
             }
         }
     }
 
-    private fun getColors(file: File, palette: String, sort: String) {
+    private fun getColors(file: File, palette: String, sort: String, imgUrl: String) {
         Log.e("getColors()", "invoked!")
 
         val filePart = MultipartBody.Part.createFormData("image", file.name, RequestBody.create(MediaType.parse("image/*"), file))
@@ -135,7 +122,16 @@ class NewThingActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ColorTags>, response: Response<ColorTags>) {
                 val data = response.body()
                 Log.e("colorRecognition", data?.tags?.get(0)?.label)
-                tv_thing_color.text = data?.tags?.get(0)?.label
+                val currentColor = data!!.tags.get(0).label
+                val dbRef = FirebaseDatabase.getInstance().reference
+                dbRef.child("things")
+                        .child(currentUser?.uid.toString())
+                        .child(currentUUID)
+                        .setValue(Thing(
+                                currentUUID,
+                                currentColor,
+                                currentType,
+                                imgUrl))
                 finishActivityWithOKResult()
             }
 

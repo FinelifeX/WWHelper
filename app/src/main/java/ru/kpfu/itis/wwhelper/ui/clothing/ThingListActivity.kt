@@ -38,8 +38,6 @@ class ThingListActivity : AppCompatActivity() {
 
     private val listOfThings = mutableListOf<Thing>()
 
-//    private lateinit var currentPhotoPath: String
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_things)
@@ -57,20 +55,6 @@ class ThingListActivity : AppCompatActivity() {
         fb_list_things.setOnClickListener {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (takePictureIntent.resolveActivity(packageManager) != null) {
-//                var photoFile: File? = null
-//                try {
-//                    photoFile = createImageFile()
-//                } catch (e: IOException) {
-//                    Log.e("takePhoto", "ERROR")
-//                }
-//
-//                if (photoFile != null) {
-//                    val photoUri = FileProvider.getUriForFile(this,
-//                            "ru.kpfu.itis.wwhelper.fileprovider",
-//                            photoFile)
-//                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-//                    startActivityForResult(takePictureIntent, RC_TAKE_PICTURE)
-//                }
                 startActivityForResult(takePictureIntent, RC_TAKE_PICTURE)
             }
         }
@@ -98,28 +82,11 @@ class ThingListActivity : AppCompatActivity() {
         if (requestCode == RC_TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
             val addThingIntent = Intent(this, NewThingActivity::class.java)
 
-//            val bm = BitmapFactory.decodeFile(currentPhotoPath)
-//            val baos = ByteArrayOutputStream()
-//            bm.compress(Bitmap.CompressFormat.PNG, 100, baos)
-//            val byteArray = baos.toByteArray()
-
-//            addThingIntent.putExtra("imageLocalPath", currentPhotoPath)
             lastTakenPhotoBitmap = data?.extras?.get("data") as Bitmap
             startActivityForResult(addThingIntent, RC_NEW_THING)
         }
 
     }
-
-//    private fun createImageFile() : File {
-//        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-//        val imageFileName = "PNG_${timestamp}_"
-//        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//        val image = File.createTempFile(
-//                imageFileName, ".png", storageDir
-//        )
-//        currentPhotoPath = image.absolutePath
-//        return image
-//    }
 
     private fun checkAccessCameraPermission() {
         if (ContextCompat.checkSelfPermission(this,

@@ -10,13 +10,14 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.item_list_things.view.*
 import ru.kpfu.itis.wwhelper.R
 import ru.kpfu.itis.wwhelper.model.clothing.Thing
+import ru.kpfu.itis.wwhelper.model.provider.UserProvider
 
 
 /*
 *** Created by Bulat Murtazin on 29.08.2018 ***
 */
 
-class ThingListAdapter(private val list: List<Thing>, val context: Context) : RecyclerView.Adapter<ThingListAdapter.ThingViewHolder>() {
+class ThingListAdapter(private val list: MutableList<Thing>, val context: Context) : RecyclerView.Adapter<ThingListAdapter.ThingViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThingViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -34,7 +35,10 @@ class ThingListAdapter(private val list: List<Thing>, val context: Context) : Re
         holder.itemView.tv_thing_color.text = list[position].color
         holder.itemView.btn_thing_delete.setOnClickListener {
             FirebaseDatabase.getInstance().reference.child("things")
-            //TODO delete element from database
+                    .child(UserProvider.getCurrentUser()!!.uid!!)
+                    .child(list[position].uid!!).removeValue()
+            list.removeAt(position)
+            notifyDataSetChanged()
         }
     }
 

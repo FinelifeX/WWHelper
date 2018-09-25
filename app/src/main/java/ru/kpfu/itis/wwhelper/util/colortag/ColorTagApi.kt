@@ -35,7 +35,7 @@ class ColorTagApi {
         @POST("tag-file.json")
         @Headers("X-Mashape-Key: tkWiGgNmwXmshxHOwiZFCRsnXlaYp1otE6EjsnLxohSwKekCHQ")
         fun getColors(
-                @Part("image") filePart: MultipartBody.Part,
+                @Part filePart: MultipartBody.Part,
                 @Part("palette") palette: RequestBody,
                 @Part("sort") sort: RequestBody
         ) : Call<ColorTags>

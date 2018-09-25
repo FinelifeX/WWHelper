@@ -26,7 +26,7 @@ import ru.kpfu.itis.wwhelper.util.weatherResponseBody
 *** Created by Bulat Murtazin on 01.09.2018 ***
 */
 
-class AdviceFragment : Fragment() {
+class   AdviceFragment : Fragment() {
 
     var suggestedItems = mutableListOf<Thing>()
 //    var chestItems = mutableListOf<Thing>()
